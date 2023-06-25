@@ -26,25 +26,63 @@ def signupAPI(request):
         user.save()
         token = Token.objects.create(user=user)
         return Response({
-            "user": serializer.data,
-            "token": token.key
-        })
+            "response":"User created successfuly.",
+            "details":{
+                "user": serializer.data,
+                "token": token.key
+                }
+            },
+            status=status.HTTP_201_CREATED
+        )
     else:
-        return Response({"error":"User already exist."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "response":"User already exist."
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 # Here is the delete user api request
 @api_view(['POST'])
 def deleteUserAPI(request):
-    user = User.objects.get(username=request.data["username"])
     try:
-        user.delete()
+        username = request.data.get("username")
+        password = request.data.get("password")
+        email = request.data.get("email")
+        
+        if not email or not password or not username:
+            return Response({
+                "response": "email, username and password are required."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.get(email=email)
+
+        ##########################################
+        if not user.check_password(password):
+            return Response({
+                "response": "Invalid Password."
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        
+        if not user.get_username() == username:
+            return Response({
+                "response": "Invalid Username."
+            }, status=status.HTTP_401_UNAUTHORIZED)
+        ###########################################
+
+        try:
+            user.delete()
+            return Response({
+                "response": "User deleted successfully."
+            }, status=status.HTTP_202_ACCEPTED)
+        except Exception as e:
+            return Response({
+                "response": str(e)
+            }, status=status.HTTP_404_NOT_FOUND)
+    except User.DoesNotExist:
         return Response({
-            "status":"User deleted successfuly.",
-        })
-    except:
-        return Response({"error":"User not found."},
-                        status=status.HTTP_401_UNAUTHORIZED)
+            "response": "User not found."
+        }, status=status.HTTP_404_NOT_FOUND)
+
 
 
 
