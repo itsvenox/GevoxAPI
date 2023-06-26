@@ -15,39 +15,35 @@ from rest_framework.permissions import IsAuthenticated
 
 
 
+from django.contrib.auth.models import User
+
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
 def createPostAPI(request):
     serializer = PostSerializer(data=request.data)
 
-    title = request.data.get("title")
-    description = request.data.get("description")
-    
-    if not title:
-        return Response({
-            "response": "Title requierd.",
-            }, status=status.HTTP_400_BAD_REQUEST)
-    if not description:
-        return Response({
-            "response": "Description requierd.",
-            }, status=status.HTTP_400_BAD_REQUEST)
     if serializer.is_valid():
-        # Set the author field as the ID of the authenticated user
-        serializer.validated_data['author'] = request.user.id
+        author_id = request.data.get("author")
+        try:
+            author = User.objects.get(pk=author_id)
+        except User.DoesNotExist:
+            return Response({
+                "response": "Invalid author ID."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Assign the author instance to the serializer's data
+        serializer.validated_data['author'] = author
 
         # Create the post object
         post = serializer.save()
         return Response({
             "response": "Post created successfully.",
-            "details": {
-                "post": serializer.data
-            }
+            "post": serializer.data
         }, status=status.HTTP_201_CREATED)
     else:
         return Response({
             "response": "Invalid data.",
-            }, status=status.HTTP_400_BAD_REQUEST)
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['DELETE'])

@@ -1,38 +1,24 @@
+#### LOGIN USER
 POST http://127.0.0.1:8000/api/v1/auth/login/
 Content-Type: application/json
 
-{
-    "username": "omar",
-    "password": "omar123"
-}
+{"username": "omar3",
+"password": "omar123"}
 
 
-####
+#### SIGNUP
 POST http://127.0.0.1:8000/api/v1/auth/signup/
 Content-Type: application/json
 
-{
-    "username": "omar",
-    "password": "omar123",
-    "email": "omar123@gevox.com"
-}
+{"username": "omar3",
+"password": "omar123",
+"email": "omar1233@gevox.com"}
 
 
-####
+#### DELETE USER
 POST http://127.0.0.1:8000/api/v1/auth/delete-user/
 Content-Type: application/json
 
-{
-    "email": "omar123@gevox.com",
-    "password": "omar123",
-    "username": "omar2"
-}
-
-### 
-# the user use this api must be authentication 
-# to use this api authorization :
-# GET http://127.0.0.1:8000/api/v1/auth/token-authenticated/
-# Content-Type: application/json
-# Authorization: Token 2abc6d5485792c5eb59b9385bc39023c14c1bd99
-
-
+{"email": "omar1232@gevox.com",
+"password": "omar123",
+"username": "omar2"}
