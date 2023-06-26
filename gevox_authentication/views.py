@@ -7,6 +7,10 @@ from django.contrib.auth.models import User
 
 from datetime import datetime
 
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 # Here is the login API request
 @api_view(['POST'])
@@ -121,7 +125,15 @@ def deleteUserAPI(request):
 
 
 
+# the user use this api must be authentication 
+# to use this api authorization :
+### - POST http://127.0.0.1:8000/api/v1/auth/token-authenticated/
+### - Content-Type: application/json
+### - Authorization: Token [TOKEN]
 
-# @api_view(['POST'])
-# def loginAPI(request):
-#     return Response({})
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def tokenAuthenticatedAPI(request):
+    return Response({"response":f"User {request.user.email} is passed."})

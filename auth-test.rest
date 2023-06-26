@@ -2,7 +2,7 @@ POST http://127.0.0.1:8000/api/v1/auth/login/
 Content-Type: application/json
 
 {
-    "username": "omar2",
+    "username": "omar",
     "password": "omar123"
 }
 
@@ -12,7 +12,7 @@ POST http://127.0.0.1:8000/api/v1/auth/signup/
 Content-Type: application/json
 
 {
-    "username": "omar2",
+    "username": "omar",
     "password": "omar123",
     "email": "omar123@gevox.com"
 }
@@ -28,4 +28,11 @@ Content-Type: application/json
     "username": "omar2"
 }
 
-###
+### 
+# the user use this api must be authentication 
+# to use this api authorization :
+# GET http://127.0.0.1:8000/api/v1/auth/token-authenticated/
+# Content-Type: application/json
+# Authorization: Token 2abc6d5485792c5eb59b9385bc39023c14c1bd99
+
+

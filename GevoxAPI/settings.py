@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'gevox_authentication'
+
+    'gevox_authentication',
+    'gevox_posts'
 ]
 
 MIDDLEWARE = [

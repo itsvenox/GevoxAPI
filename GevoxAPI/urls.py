@@ -3,10 +3,13 @@ from django.contrib import admin
 from django.urls import include, path
 
 from gevox_authentication import views
+from gevox_posts import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/v1/auth/", include("gevox_authentication.urls")),
+    path("api/v1/post/", include("gevox_posts.urls")),
 ]
 
 
