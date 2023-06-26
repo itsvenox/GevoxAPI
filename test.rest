@@ -1,12 +1,13 @@
 POST http://127.0.0.1:8000/api/v1/auth/login/
 Content-Type: application/json
 
-{}
+{
+    "username": "omar2",
+    "password": "omar123"
+}
 
 
 ####
-
-
 POST http://127.0.0.1:8000/api/v1/auth/signup/
 Content-Type: application/json
 
