@@ -1,5 +1,3 @@
 django
 djangorestframework
-dj-database-url
-python-decouple
-dj-static
+requests

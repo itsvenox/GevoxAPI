@@ -12,16 +12,15 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from decouple import config
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = config("SECRET_KEY")
-DEBUG = config("DEBUG")
+SECRET_KEY = 'django-insecure-6jq=fw*rygrw6i&dp39%s9(93xq-u!!$g%@#*!2o^g08y+c+5@'
+DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
