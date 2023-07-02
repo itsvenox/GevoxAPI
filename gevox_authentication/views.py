@@ -12,47 +12,47 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
-# Here is the login API request
 @api_view(['POST'])
 def loginAPI(request):
     email = request.data.get("email")
     password = request.data.get("password")
-    # Check if password is provided
-    if not password:
+    username = request.data.get("username")
+
+    if not email and not username:
         return Response({
-            "response": "Please provide your password."
-            }, status=status.HTTP_400_BAD_REQUEST
-        )
-    if not email:
-        try: 
-            username = request.data.get("username")
-        except KeyError:
-            return Response({
-                "response": "Please provide your email or username."
-                }, status=status.HTTP_400_BAD_REQUEST)
+            "code": 400,
+            "response": "Please provide your email or username."
+        })
+
     try:
-        # Retrieve the user based on the provided email or username
-        user = User.objects.get(email=email) if email else User.objects.get(username=username)
-    except User.DoesNotExist:
+        if email:
+            user = User.objects.get(email=email)
+        else:
+            user = User.objects.get(username=username)
+    except:
         return Response({
+            "code": 404,
             "response": "User not found."
-        }, status=status.HTTP_404_NOT_FOUND)
+        })
 
     if not user.check_password(password):
         return Response({
+            "code": 401,
             "response": "Invalid password."
-        }, status=status.HTTP_401_UNAUTHORIZED)
+        })
 
     # Generate or retrieve the authentication token
     token, created = Token.objects.get_or_create(user=user)
     serializer = UserSerializer(instance=user)
     return Response({
+        "code": 200,
         "response": "Login successful.",
         "details": {
             "time": datetime.now().strftime("%y/%m/%d - %H:%M:%S"),
-            "token": token.key
+            "token": token.key,
         }
-    }, status=status.HTTP_200_OK)
+    })
+
 
 
 # Here is the signup API request
@@ -63,8 +63,9 @@ def signupAPI(request):
         username = request.data.get('username')
         if User.objects.filter(username=username).exists():
             return Response({
+                "code": 400,
                 "response": "Username already exists."
-            }, status=status.HTTP_400_BAD_REQUEST)
+                })
         
         # Save the user instance
         user = serializer.save()
@@ -75,17 +76,19 @@ def signupAPI(request):
         # Create an authentication token
         token = Token.objects.create(user=user)
         return Response({
+            "code": 201,
             "response": "User created successfully.",
             "details": {
                 "time": datetime.now().strftime("%y/%m/%d - %H:%M:%S"),
                 "user": serializer.data,
                 "token": token.key
-            }
-        }, status=status.HTTP_201_CREATED)
+                }
+            })
     else:
         return Response({
+            "code": 400,
             "response": "A user with that username already exists."
-        }, status=status.HTTP_400_BAD_REQUEST)
+            })
 
 
 
@@ -100,12 +103,14 @@ def logoutAPI(request):
         token_obj = Token.objects.get(key=token)
         token_obj.delete()
         return Response({
+            "code": 200,
             "response": "Logout successful."
-        }, status=status.HTTP_200_OK)
+            })
     except Token.DoesNotExist:
         return Response({
+            "code": 401,
             "response": "Invalid token."
-        }, status=status.HTTP_401_UNAUTHORIZED)
+            })
 
 
 
@@ -119,7 +124,6 @@ def banUserAPI(request):
     username = request.data.get("username")
     try:
         user = User.objects.get(username=username)
-        user.is_active = False  # Ban the user by deactivating their account
         user.delete()  # Delete the user from the database
         return Response({
             "response": "User banned and deleted successfully."
