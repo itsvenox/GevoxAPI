@@ -39,6 +39,16 @@ INSTALLED_APPS = [
     'gevox_posts'
 ]
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # Add other authentication classes if needed
+    ],
+    # Other REST_FRAMEWORK settings
+}
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -68,6 +78,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'GevoxAPI.wsgi.application'
+
+
 
 
 # Database
