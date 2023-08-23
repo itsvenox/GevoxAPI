@@ -1,5 +1,4 @@
-# models.py
-
+# gevox_posts models.py
 from typing import Any
 from django.db import models
 from django.contrib.auth.models import User

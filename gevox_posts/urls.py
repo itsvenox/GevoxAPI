@@ -1,3 +1,4 @@
+# gevox_aposts urls.py
 from django.urls import path
 
 from . import views

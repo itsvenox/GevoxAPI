@@ -1,11 +1,11 @@
-# serializer.py
+# gevox_posts serializer.py
 
 from rest_framework import serializers
 from .models import PostModel, Sparks
 
 class PostSerializer(serializers.ModelSerializer):
     createdAt = serializers.DateTimeField(read_only=True)
-    sparks = serializers.StringRelatedField(many=True)
+    sparks = serializers.PrimaryKeyRelatedField(queryset=Sparks.objects.all(), many=True)
     likes_count = serializers.SerializerMethodField()
 
     class Meta:

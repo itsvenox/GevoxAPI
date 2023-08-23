@@ -1,0 +1,10 @@
+env\Scripts\activate
+
+
+home ip
+python manage.py runserver 192.168.8.102:8000
+
+
+
+school ip
+python manage.py runserver 10.20.33.125:8000

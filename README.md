@@ -1,8 +1,4 @@
 # GevoxAPI
- GevoxAPI using Django rest ramework
+ GevoxAPI using Django rest framework
 
-
-env\Scripts\activate
-
-python manage.py runserver 192.168.8.102:8000
 
