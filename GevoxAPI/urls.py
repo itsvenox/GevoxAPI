@@ -1,4 +1,4 @@
-
+# GevoxAPI Urls.py
 from django.contrib import admin
 from django.urls import include, path
 
@@ -11,7 +11,6 @@ urlpatterns = [
     path("api/v1/auth/", include("gevox_authentication.priv_urls")),
     path("api/v1/user/", include("gevox_authentication.publi_urls")),
     path("api/v1/post/", include("gevox_posts.urls")),
-    
 ]
 
 

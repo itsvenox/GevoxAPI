@@ -56,6 +56,7 @@ def loginAPI(request):
         }
     })
 
+
 # Here is the signup API request
 @api_view(['POST'])
 def signupAPI(request):
@@ -97,6 +98,7 @@ def signupAPI(request):
             "response": "A user with that username already exists."
             })
 
+
 # Here is the Logout user API request
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -117,6 +119,8 @@ def logoutAPI(request):
             "response": "Invalid token."
             })
 
+
+
 # Here is the Ban user API request
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAdminUser])
@@ -135,6 +139,7 @@ def banUserAPI(request):
             "response": "User not found.",
             "code": 404
         })
+
 
 
 @api_view(['GET'])
