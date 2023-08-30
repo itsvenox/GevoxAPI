@@ -11,7 +11,6 @@ Brief description of your project.
 - - [Comments](#comments)
 - - [Following/Unfollowing](#following/unfollowing)
 - [Installation](#installation)
-- [Usage](#usage)
 - [API Endpoints](#api-endpoints)
 
 
