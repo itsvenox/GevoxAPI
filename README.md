@@ -1,6 +1,5 @@
-# Project Name
+# GevoxAPI
 
-Brief description of your project.
 
 ## Table of Contents
 
