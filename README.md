@@ -50,25 +50,132 @@ GevoxAPI is a Django-based web application that provides a platform for users to
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/your-project.git
-   cd your-project
+   git clone https://github.com/iitsvenox/gevoxapi.git
 
 
 
-## Usage
 
-    Access the web application at http://localhost:8000.
-    Register a new account or log in with existing credentials.
-    Explore the platform by creating posts, liking posts, adding comments, and following other users.
 
 ## API Endpoints
 
-Here are some of the main API endpoints available in the project. For detailed information, check the project's URLs and views files.
+### Authentication
 
-    POST /api/v1/auth/login/: Log in a user and get an authentication token.
-    POST /api/v1/auth/signup/: Register a new user.
-    POST /api/v1/post/create-post/: Create a new post.
-    DELETE /api/v1/post/delete-post/<int:post_id>/: Delete a post.
-    POST /api/v1/post/<int:post_id>/comment/add/: Add a comment to a post.
-    DELETE /api/v1/post/comment/<int:comment_id>/delete/: Delete a comment.
-    POST /api/v1/post/<int:post_id>/like/: Like or unlike a post.
+#### User Login
+- Endpoint: `/api/v1/auth/login/`
+- Method: POST
+- Example Request:
+ ```json
+ {
+   "email": "user@example.com",
+   "password": "your_password"
+ }
+ ```
+ or
+ ```json
+ {
+   "username": "your_username",
+   "password": "your_password"
+ }
+ ```
+
+#### User Signup
+- Endpoint: `/api/v1/auth/signup/`
+- Method: POST
+- Example Request:
+ ```json
+ {
+   "username": "new_user",
+   "email": "new_user@example.com",
+   "password": "your_password"
+ }
+ ```
+
+#### User Logout
+- Endpoint: `/api/v1/auth/logout/`
+- Method: POST
+- Example Request: (Include Authorization Header with Token)
+ ```json
+ {
+   "Authorization": "Token your_token_here"
+ }
+ ```
+
+### User Profiles
+
+#### Get User Profile
+- Endpoint: `/api/v1/user/<int:pk>/profile/`
+- Method: GET
+- Example Request: (No additional data required)
+
+#### Follow User
+- Endpoint: `/api/v1/user/<int:id>/follow/`
+- Method: POST
+- Example Request: (Include Authorization Header with Token)
+ ```json
+ {
+   "Authorization": "Token your_token_here"
+ }
+ ```
+
+#### Unfollow User
+- Endpoint: `/api/v1/user/<int:id>/unfollow/`
+- Method: POST
+- Example Request: (Include Authorization Header with Token)
+ ```json
+ {
+   "Authorization": "Token your_token_here"
+ }
+ ```
+
+### Posts
+
+#### Create Post
+- Endpoint: `/api/v1/post/create-post/`
+- Method: POST
+- Example Request: (Include Authorization Header with Token)
+ ```json
+ {
+   "title": "New Post",
+   "description": "This is a new post.",
+   "author": "your_id_here",
+   "sparks": []
+ }
+ ```
+
+#### Delete Post
+- Endpoint: `/api/v1/post/delete-post/<int:post_id>/`
+- Method: DELETE
+- Example Request: (Include Authorization Header with Token)
+
+...
+
+## Likes and Comments
+
+#### Like or Unlike Post
+- Endpoint: `/api/v1/post/like/<int:post_id>/`
+- Method: POST
+- Example Request: (Include Authorization Header with Token)
+
+#### Add Comment to Post
+- Endpoint: `/api/v1/post/<int:post_id>/comment/add/`
+- Method: POST
+- Example Request: (Include Authorization Header with Token)
+ ```json
+ {
+   "content": "This is a comment."
+ }
+ ```
+
+#### Delete Comment
+- Endpoint: `/api/v1/post/comment/<int:comment_id>/delete/`
+- Method: DELETE
+- Example Request: (Include Authorization Header with Token)
+
+...
+
+## Conclusion
+
+This documentation provides an overview of the GevoxAPI project's endpoints and example requests. Feel free to explore and integrate these endpoints into your applications.
+
+For more detailed information and additional endpoints, please refer to the source code and the respective app documentation.
+
