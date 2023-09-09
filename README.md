@@ -48,7 +48,7 @@ GevoxAPI is a Django-based web application that provides a platform for users to
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/iitsvenox/gevoxapi.git
+   git clone https://github.com/itsvenox/gevoxapi.git
 
 
 
