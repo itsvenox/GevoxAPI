@@ -69,6 +69,12 @@ def signupAPI(request):
                 "response": "Username already exists."
                 })
         
+        email = request.data.get('email')
+        if User.objects.filter(email=email).exists():
+            return Response({
+                "code": 400,
+                "response": "Email already exists."
+                })
         # Save the user instance
         user = serializer.save()
         # Set the user's password
@@ -104,7 +110,7 @@ def signupAPI(request):
 @permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def logoutAPI(request):
-    token = request.headers.get('Authorization').split(' ')[1]
+    token = request.headers.get('Authorization')
     try:
         # Find the token in the database
         token_obj = Token.objects.get(key=token)
