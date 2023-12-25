@@ -9,22 +9,32 @@ class Sparks(models.Model):
     def __str__(self):
         return self.sparks
 
-
 class PostModel(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    createdAt = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     sparks = models.ManyToManyField(Sparks)
     likes = models.ManyToManyField(User, related_name='liked_posts')
 
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        self.author.userprofile.reputation += 5
+        # Calculate the number of new likes
+        new_likes = self.likes.count() - self.__class__.objects.get(pk=self.pk).likes.count()
+
+        # Increase user's reputation by 2 for each new like
+        self.author.userprofile.reputation += 2 * new_likes
+        self.author.userprofile.save()
+
+        super().save(*args, **kwargs)
+
 
 # comment model 
 class CommentModel(models.Model):
-    post = models.ForeignKey(PostModel, on_delete=models.CASCADE)
+    post = models.ForeignKey(PostModel, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

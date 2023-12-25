@@ -8,4 +8,5 @@ urlpatterns = [
     path('signup/', views.signupAPI),
     path('logout/', views.logoutAPI),
     path('ban-user/', views.banUserAPI),
+    path('current-user/', views.currentUserAPI),
 ]

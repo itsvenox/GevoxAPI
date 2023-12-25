@@ -1,9 +1,12 @@
 # gevox_authentication views.py
+from django.http import Http404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from gevox_authentication.models import Follow, UserProfile
-from .serializers import UserSerializer, profileSerializer
+from gevox_posts.models import PostModel
+from gevox_posts.serializers import PostSerializer
+from .serializers import UserSerializer, UserProfileSerializer
 from rest_framework  import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -13,7 +16,7 @@ from datetime import datetime
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-
+from django.contrib.auth.models import AnonymousUser
 
 @api_view(['POST'])
 def loginAPI(request):
@@ -105,6 +108,38 @@ def signupAPI(request):
             })
 
 
+
+
+
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def currentUserAPI(request):
+    # Check if the user is authenticated
+    if not isinstance(request.user, AnonymousUser):
+        user_profile = UserProfile.objects.get(user=request.user)
+        posts = PostModel.objects.filter(author_id=request.user)
+        
+        user_data = {
+            'username': user_profile.user.username,
+            'email': user_profile.user.email,
+            'profile_picture': user_profile.profile_picture.url if user_profile.profile_picture else None,
+            'joined_date': user_profile.user.date_joined,
+            'bio': user_profile.bio,
+            'posts': PostSerializer(posts, many=True).data  # Serialize the user's posts
+        }
+
+        return Response({
+            "code": 200,
+            "details":user_data})
+    else:
+        return Response({
+            "response": "User not authenticated.",
+            "code": 401
+        })
+
+
+
 # Here is the Logout user API request
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -152,7 +187,7 @@ def banUserAPI(request):
 def userProfileAPI(request, pk):
     try:
         user_profile = UserProfile.objects.get(pk=pk)
-        serializer = profileSerializer(user_profile)
+        serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data)
     except UserProfile.DoesNotExist:
         return Response({
@@ -178,6 +213,9 @@ def followUserAPI(request, id):
     follow, created = Follow.objects.get_or_create(follower=request.user, following=target_user)
     
     if created:
+        request.user.userprofile.reputation += 1
+        request.user.userprofile.save()
+        upgrade_user_level(request.user.userprofile)
         return Response({"response": "User followed successfully.", "code": 201})
     else:
         return Response({"response": "You are already following this user.", "code": 400})
@@ -196,6 +234,37 @@ def unfollowUserAPI(request, id):
     
     if follow.exists():
         follow.delete()
+        request.user.userprofile.reputation -= 1
+        request.user.userprofile.save()
         return Response({"response": "User unfollowed successfully.", "code": 200})
     else:
         return Response({"response": "You are not following this user.", "code": 400})
+
+
+
+
+def upgrade_user_level(user_profile):
+    reputation = user_profile.reputation
+
+    if reputation < 5:
+        user_profile.level = 1
+    elif reputation < 25:
+        user_profile.level = 2
+    elif reputation < 50:
+        user_profile.level = 3
+    elif reputation < 100:
+        user_profile.level = 4
+    elif reputation < 200:
+        user_profile.level = 5
+    elif reputation < 400:
+        user_profile.level = 6
+    elif reputation < 550:
+        user_profile.level = 7
+    elif reputation < 700:
+        user_profile.level = 8
+    elif reputation < 950:
+        user_profile.level = 9
+    elif reputation < 1200:
+        user_profile.level = 10
+
+    user_profile.save()

@@ -1,6 +1,7 @@
 # gevox_posts views.py
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from gevox_authentication.views import upgrade_user_level
 from gevox_posts.models import CommentModel, PostModel
 from .serializers import PostSerializer, SparkSerializer
 from rest_framework  import status
@@ -9,18 +10,36 @@ from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import User
+from gevox_authentication.models import UserProfile
 
 
-@api_view(['POST'])
+
+
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
+@api_view(['POST'])
 def createPostAPI(request):
     serializer = PostSerializer(data=request.data)
+
     if serializer.is_valid():
-        # Set the author field to the currently authenticated user
-        serializer.validated_data['author'] = request.user
+        author_id = request.data.get("author")
+        try:
+            author = User.objects.get(pk=author_id)
+        except User.DoesNotExist:
+            return Response({
+                "response": "Invalid author ID.",
+                "code": 400
+            })
+        serializer.validated_data['author'] = author
+
         # Create the post object
         post = serializer.save()
+
+        # Update user level
+        request.user.userprofile.reputation += 5
+        request.user.userprofile.save()
+        upgrade_user_level(request.user.userprofile)
+
         return Response({
             "response": "Post created successfully.",
             "post": serializer.data,
@@ -32,6 +51,7 @@ def createPostAPI(request):
             "errors": serializer.errors,
             "code": 400
         })
+
 
 
 
@@ -56,7 +76,7 @@ def deletePostAPI(request, post_id):
 @api_view(['GET'])
 def getPostAPI(request, post_id):
     try:
-        post = PostModel.objects.get(post_id=post_id)
+        post = PostModel.objects.get(id=post_id)
         serializer = PostSerializer(post)
         return Response(serializer.data)
     except PostModel.DoesNotExist:
@@ -71,9 +91,10 @@ def getPostAPI(request, post_id):
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])
 def getAllPostsAPI(request):
+    upgrade_user_level(request.user.userprofile)
     posts = PostModel.objects.all().order_by('-createdAt')  # Order by descending date
     serializer = PostSerializer(posts, many=True)
-    return Response(serializer.data)
+    return Response({"code": 200,"response": "Posts Found.", "posts":serializer.data})
 
 
 
@@ -86,9 +107,18 @@ def likePostAPI(request, post_id):
         user = request.user
         if post.likes.filter(id=user.id).exists():
             post.likes.remove(user)
+            post.author.userprofile.reputation -= 1
+            post.author.userprofile.save()
+            request.user.userprofile.reputation -= 1
+            request.user.userprofile.save()
             return Response({"response": "Post unliked.", "code": 200})
         else:
             post.likes.add(user)
+            post.author.userprofile.reputation += 1
+            post.author.userprofile.save()
+            request.user.userprofile.reputation += 1
+            request.user.userprofile.save()
+            upgrade_user_level(request.user.userprofile)
             return Response({"response": "Post liked.", "code": 200})
     except PostModel.DoesNotExist:
         return Response({"response": "Post not found.", "code": 404})
@@ -119,6 +149,11 @@ def addCommentAPI(request, post_id):
         content = request.data.get('content')
         if content:
             comment = CommentModel.objects.create(post=post, user=request.user, content=content)
+            post.author.userprofile.reputation += 2
+            post.author.userprofile.save()
+            request.user.userprofile.reputation += 2
+            request.user.userprofile.save()
+            upgrade_user_level(request.user.userprofile)
             return Response({"response": "Comment added successfully.", "code": 201})
         else:
             return Response({"response": "Comment text is required.", "code": 400})

@@ -1,24 +1,22 @@
-# gevox_authentication serializers.py
+# gevox_authentication/serializers.py
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from gevox_posts.serializers import PostSerializer
 from .models import UserProfile
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta(object):
+    class Meta:
         model = User
         fields = ['id', 'username', 'password', 'email']
 
 
-class profileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
-    posts = PostSerializer(many=True, read_only=True, source='user.postmodel_set')
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
 
-    class Meta(object):
+    class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'profile_picture', 'bio', 'posts', 'followers_count', 'following_count']
+        fields = ['id', 'username', 'profile_picture', 'bio', 'level','reputation', 'followers_count', 'following_count']
 
     def get_followers_count(self, user_profile):
         return user_profile.user.followers.count()
