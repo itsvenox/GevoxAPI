@@ -118,12 +118,40 @@ def currentUserAPI(request):
     # Check if the user is authenticated
     if not isinstance(request.user, AnonymousUser):
         user_profile = UserProfile.objects.get(user=request.user)
-        posts = PostModel.objects.filter(author_id=request.user)
-        
+        # posts = PostModel.objects.filter(author=request.user)
+
         user_data = {
+            'id': user_profile.user.id,
             'username': user_profile.user.username,
             'email': user_profile.user.email,
-            'profile_picture': user_profile.profile_picture.url if user_profile.profile_picture else None,
+            'profile_picture': user_profile.profile_picture if user_profile.profile_picture else None,
+            'joined_date': user_profile.user.date_joined,
+            'bio': user_profile.bio,
+            # 'posts': PostSerializer(posts, many=True).data  # Serialize the user's posts
+        }
+
+        return Response({
+            "code": 200,
+            "details": user_data
+        })
+    else:
+        return Response({
+            "response": "User not authenticated.",
+            "code": 401
+        })
+
+
+@api_view(['GET'])
+def userProfileAPI(request, pk):
+    if not isinstance(request.user, AnonymousUser):
+        user_profile = UserProfile.objects.get(id=pk)
+        posts = PostModel.objects.filter(author=pk)
+
+        user_data = {
+            'id': user_profile.user.id,
+            'username': user_profile.user.username,
+            # 'email': user_profile.user.email,
+            'profile_picture': user_profile.profile_picture if user_profile.profile_picture else None,
             'joined_date': user_profile.user.date_joined,
             'bio': user_profile.bio,
             'posts': PostSerializer(posts, many=True).data  # Serialize the user's posts
@@ -131,12 +159,14 @@ def currentUserAPI(request):
 
         return Response({
             "code": 200,
-            "details":user_data})
+            "details": user_data
+        })
     else:
         return Response({
             "response": "User not authenticated.",
             "code": 401
         })
+
 
 
 
@@ -183,24 +213,14 @@ def banUserAPI(request):
 
 
 
-@api_view(['GET'])
-def userProfileAPI(request, pk):
-    try:
-        user_profile = UserProfile.objects.get(pk=pk)
-        serializer = UserProfileSerializer(user_profile)
-        return Response(serializer.data)
-    except UserProfile.DoesNotExist:
-        return Response({
-            "response": "User profile not found.",
-            "code": 404
-        })
+
 
 
 
 # gevox_authentication views.py
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-@api_view(['POST'])
+@api_view(['GET'])
 def followUserAPI(request, id):
     try:
         target_user = User.objects.get(id=id)
@@ -223,7 +243,7 @@ def followUserAPI(request, id):
 
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
-@api_view(['POST'])
+@api_view(['GET'])
 def unfollowUserAPI(request, id):
     try:
         target_user = User.objects.get(id=id)

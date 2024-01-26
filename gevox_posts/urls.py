@@ -9,7 +9,9 @@ urlpatterns = [
     path('get-post/<int:post_id>/', views.getPostAPI),
     path('get-posts/', views.getAllPostsAPI),
     path('like/<int:post_id>/', views.likePostAPI, name='like_post'),
-    path('<int:post_id>/comment/add/', views.addCommentAPI, name='add-comment'),
-    path('comment/<int:comment_id>/delete/', views.deleteCommentAPI, name='delete-comment'),
+    path('comment/add/<int:post_id>/', views.addCommentAPI, name='add-comment'),
+    path('comment/delete/<int:comment_id>/', views.deleteCommentAPI, name='delete-comment'),
+    path('comments/<int:post_id>/', views.getCommentsAPI),
     path('new-spark/', views.newSparkAPI)
 ]
+

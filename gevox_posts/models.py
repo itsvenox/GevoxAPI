@@ -13,9 +13,11 @@ class PostModel(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    image_url = models.URLField(blank=True, null=True,)
     created_at = models.DateTimeField(auto_now_add=True)
     sparks = models.ManyToManyField(Sparks)
     likes = models.ManyToManyField(User, related_name='liked_posts')
+    # comments = models.ManyToManyField(CommentModel,)
 
     def __str__(self):
         return self.title
@@ -32,7 +34,6 @@ class PostModel(models.Model):
         super().save(*args, **kwargs)
 
 
-# comment model 
 class CommentModel(models.Model):
     post = models.ForeignKey(PostModel, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)

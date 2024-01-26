@@ -4,7 +4,7 @@ from django.urls import include, path
 
 from gevox_authentication import views
 from gevox_posts import views
-
+from .consumers import ChatConsumer
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -14,10 +14,9 @@ urlpatterns = [
 ]
 
 
-
-
-
-
+websocket_urlpatterns = [
+    path("ws/chat/", ChatConsumer.as_asgi()),
+]
 
 
 
