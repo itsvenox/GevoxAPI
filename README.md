@@ -1,5 +1,5 @@
 # GevoxAPI
-![logo](/image.png)
+![logo](/logo.png)
 
 ## Table of Contents
 
